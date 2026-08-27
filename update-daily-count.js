@@ -13,6 +13,14 @@ const path = require('path');
 
 const OUTPUT_FILE = path.join(__dirname, 'docs', 'ad-count.json');
 
+// Some sites (Taildraggers.com included) 403 Node's default fetch, which
+// sends no User-Agent header at all. A normal browser UA clears that.
+const FETCH_HEADERS = {
+  'User-Agent':
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+    '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+};
+
 // Every other taildraggers.com scraper repo, each publishing its own listings
 // page (one row per listing) to its own GitHub Pages site at this URL pattern.
 const SCRAPED_SITES = [
@@ -50,7 +58,7 @@ async function getScrapedSitesTotal() {
     SCRAPED_SITES.map(async (repo) => {
       const url = `https://taildraggers.github.io/${repo}/`;
       try {
-        const res = await fetch(url);
+        const res = await fetch(url, { headers: FETCH_HEADERS });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const html = await res.text();
         const match = html.match(/(\d+)\s+listing\(s\)/);
@@ -71,22 +79,32 @@ async function getScrapedSitesTotal() {
  * which lists per-category totals like "Aircraft (76)" and "Fly Market (0)".
  * We sum every "(N)" we find on the page.
  *
+ * A failure here (page down, blocked, markup changed) is logged and counted
+ * as 0 rather than failing the whole run — same as a single scraped site
+ * failing — so the widget still shows a real (if temporarily incomplete)
+ * total instead of going blank.
+ *
  * NOTE: this scrapes their HTML, so if that page's markup ever changes this
  * may need a small regex tweak.
  */
 async function getTaildraggersLiveCount() {
-  const res = await fetch('https://taildraggers.com/ad-count/');
-  if (!res.ok) {
-    throw new Error(`Failed to fetch ad-count page: ${res.status}`);
-  }
-  const html = await res.text();
+  try {
+    const res = await fetch('https://taildraggers.com/ad-count/', { headers: FETCH_HEADERS });
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+    const html = await res.text();
 
-  const matches = [...html.matchAll(/\(([\d,]+)\)/g)];
-  if (matches.length === 0) {
-    throw new Error('No counts found on Taildraggers ad-count page — page format may have changed.');
-  }
+    const matches = [...html.matchAll(/\(([\d,]+)\)/g)];
+    if (matches.length === 0) {
+      throw new Error('no counts found on page — format may have changed');
+    }
 
-  return matches.reduce((sum, m) => sum + parseInt(m[1].replace(/,/g, ''), 10), 0);
+    return matches.reduce((sum, m) => sum + parseInt(m[1].replace(/,/g, ''), 10), 0);
+  } catch (err) {
+    console.warn(`[warn] taildraggers.com/ad-count/: ${err.message} — counting as 0`);
+    return 0;
+  }
 }
 
 async function main() {
