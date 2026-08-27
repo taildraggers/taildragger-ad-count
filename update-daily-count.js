@@ -74,51 +74,16 @@ async function getScrapedSitesTotal() {
   return { total, bySite };
 }
 
-/**
- * Pulls Taildraggers.com's own live count from their public "Ad Count" page,
- * which lists per-category totals like "Aircraft (76)" and "Fly Market (0)".
- * We sum every "(N)" we find on the page.
- *
- * A failure here (page down, blocked, markup changed) is logged and counted
- * as 0 rather than failing the whole run — same as a single scraped site
- * failing — so the widget still shows a real (if temporarily incomplete)
- * total instead of going blank.
- *
- * NOTE: this scrapes their HTML, so if that page's markup ever changes this
- * may need a small regex tweak.
- */
-async function getTaildraggersLiveCount() {
-  try {
-    const res = await fetch('https://taildraggers.com/ad-count/', { headers: FETCH_HEADERS });
-    if (!res.ok) {
-      const server = res.headers.get('server');
-      const cfRay = res.headers.get('cf-ray');
-      const bodySnippet = (await res.text()).slice(0, 300).replace(/\s+/g, ' ');
-      console.warn(
-        `[debug] taildraggers.com/ad-count/ -> HTTP ${res.status}; ` +
-        `server=${server}; cf-ray=${cfRay}; body: ${bodySnippet}`
-      );
-      throw new Error(`HTTP ${res.status}`);
-    }
-    const html = await res.text();
-
-    const matches = [...html.matchAll(/\(([\d,]+)\)/g)];
-    if (matches.length === 0) {
-      throw new Error('no counts found on page — format may have changed');
-    }
-
-    return matches.reduce((sum, m) => sum + parseInt(m[1].replace(/,/g, ''), 10), 0);
-  } catch (err) {
-    console.warn(`[warn] taildraggers.com/ad-count/: ${err.message} — counting as 0`);
-    return 0;
-  }
-}
+// Taildraggers.com's own live ad count. taildraggers.com/ad-count/ returns
+// HTTP 403 to every fetch attempt from GitHub Actions (browser User-Agent
+// included), almost certainly a WAF rule blocking GitHub's runner IP ranges
+// rather than anything fetch-side — so this is a manually-set base count
+// instead of a live scrape. Update this number by hand as needed.
+const TAILDRAGGERS_BASE_COUNT = 75;
 
 async function main() {
-  const [scraped, taildraggersTotal] = await Promise.all([
-    getScrapedSitesTotal(),
-    getTaildraggersLiveCount(),
-  ]);
+  const scraped = await getScrapedSitesTotal();
+  const taildraggersTotal = TAILDRAGGERS_BASE_COUNT;
 
   const total = scraped.total + taildraggersTotal;
 

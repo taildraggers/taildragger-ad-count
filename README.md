@@ -15,8 +15,12 @@ GitHub Actions runs the update on a schedule, and GitHub Pages hosts the JSON + 
      and pulls the listing count out of each page's "N listing(s)" line.
      One site being down or changing its markup only zeroes that one site,
      it doesn't fail the run — check the Action logs for `[warn]` lines.
-  2. Fetches Taildraggers.com's own public `/ad-count/` page and sums the
-     per-category counts shown there (e.g. `Aircraft (76)`, `Fly Market (0)`).
+  2. Adds a manually-set base count for Taildraggers.com's own live ad count
+     (`TAILDRAGGERS_BASE_COUNT` in `update-daily-count.js`). Their
+     `/ad-count/` page 403s every request from GitHub Actions — browser
+     User-Agent included — almost certainly a WAF rule blocking GitHub's
+     runner IPs outright, so it's not live-fetched. Update that constant by
+     hand when the real count changes meaningfully.
   3. Adds both totals together and writes `docs/ad-count.json`.
 - The workflow commits that file back to the repo.
 - `docs/ad-count-widget.html` (served by GitHub Pages from the `/docs` folder)
@@ -50,7 +54,5 @@ needs to be listed.
 - Everything here is public (repo, Actions logs, the JSON file) since GitHub
   Pages and public Actions runs are visible to anyone — fine here since nothing
   sensitive is involved, just a listing count.
-- If Taildraggers.com ever redesigns their `/ad-count/` page, the regex in
-  `getTaildraggersLiveCount()` may need a small update.
 - If a scraper repo's page template changes the "N listing(s)" text, update
   the regex in `getScrapedSitesTotal()` to match.
