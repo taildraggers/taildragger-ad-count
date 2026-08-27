@@ -91,6 +91,13 @@ async function getTaildraggersLiveCount() {
   try {
     const res = await fetch('https://taildraggers.com/ad-count/', { headers: FETCH_HEADERS });
     if (!res.ok) {
+      const server = res.headers.get('server');
+      const cfRay = res.headers.get('cf-ray');
+      const bodySnippet = (await res.text()).slice(0, 300).replace(/\s+/g, ' ');
+      console.warn(
+        `[debug] taildraggers.com/ad-count/ -> HTTP ${res.status}; ` +
+        `server=${server}; cf-ray=${cfRay}; body: ${bodySnippet}`
+      );
       throw new Error(`HTTP ${res.status}`);
     }
     const html = await res.text();
