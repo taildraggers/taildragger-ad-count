@@ -25,6 +25,7 @@ const FETCH_HEADERS = {
 // page (one row per listing) to its own GitHub Pages site at this URL pattern.
 const SCRAPED_SITES = [
   'aeronca',
+  'airtractor',
   'american-champion',
   'aviat',
   'beech',
@@ -32,6 +33,7 @@ const SCRAPED_SITES = [
   'cessna',
   'cub-crafters',
   'de-Havilland',
+  'fairchild',
   'just-aircraft',
   'kitfox',
   'luscombe',
