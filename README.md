@@ -12,8 +12,8 @@ GitHub Actions runs the update on a schedule, and GitHub Pages hosts the JSON + 
      Pages site (aeronca, piper, cessna, vans, stearman, waco, pitts,
      taylorcraft, swift, beech, maule, aviat, kitfox, rans, luscombe,
      bellanca, cub-crafters, american-champion, de-Havilland, just-aircraft,
-     airtractor, fairchild) and pulls the listing count out of each page's
-     "N listing(s)" line.
+     airtractor, fairchild, stinson) and pulls the listing count out of
+     each page's "N listing(s)" line.
      One site being down or changing its markup only zeroes that one site,
      it doesn't fail the run — check the Action logs for `[warn]` lines.
   2. Adds a manually-set base count for Taildraggers.com's own live ad count

@@ -42,6 +42,7 @@ const SCRAPED_SITES = [
   'pitts',
   'rans',
   'stearman',
+  'stinson',
   'swift',
   'taylorcraft',
   'vans',
