@@ -82,7 +82,7 @@ async function getScrapedSitesTotal() {
 // included), almost certainly a WAF rule blocking GitHub's runner IP ranges
 // rather than anything fetch-side — so this is a manually-set base count
 // instead of a live scrape. Update this number by hand as needed.
-const TAILDRAGGERS_BASE_COUNT = 75;
+const TAILDRAGGERS_BASE_COUNT = 100;
 
 async function main() {
   const scraped = await getScrapedSitesTotal();
