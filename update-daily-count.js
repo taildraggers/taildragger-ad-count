@@ -33,6 +33,7 @@ const SCRAPED_SITES = [
   'cessna',
   'cub-crafters',
   'de-Havilland',
+  'extra',
   'fairchild',
   'just-aircraft',
   'kitfox',
