@@ -38,6 +38,7 @@ const SCRAPED_SITES = [
   'great-lakes',
   'just-aircraft',
   'kitfox',
+  'legend',
   'luscombe',
   'maule',
   'piper',
