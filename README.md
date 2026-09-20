@@ -8,14 +8,19 @@ GitHub Actions runs the update on a schedule, and GitHub Pages hosts the JSON + 
 - `.github/workflows/update-count.yml` runs daily (default 12:00 UTC — edit the
   cron line to change it), executing `update-daily-count.js`.
 - That script:
-  1. Fetches every other taildraggers.com scraper repo's published GitHub
-     Pages site (aeronca, piper, cessna, vans, stearman, waco, pitts,
-     taylorcraft, swift, beech, maule, aviat, kitfox, rans, luscombe,
-     bellanca, cub-crafters, american-champion, de-Havilland, just-aircraft,
-     airtractor, fairchild, stinson) and pulls the listing count out of
-     each page's "N listing(s)" line.
+  1. Fetches every other taildraggers.com per-manufacturer scraper repo's
+     published GitHub Pages site (aeronca, piper, cessna, vans, stearman,
+     waco, pitts, taylorcraft, swift, beech, maule, aviat, kitfox, rans,
+     luscombe, bellanca, cub-crafters, american-champion, de-Havilland,
+     just-aircraft, airtractor, fairchild, stinson, extra, great-lakes,
+     legend) and pulls the listing count out of each page's "N listing(s)"
+     line.
      One site being down or changing its markup only zeroes that one site,
      it doesn't fail the run — check the Action logs for `[warn]` lines.
+     Deliberately excludes the per-state repos (colorado, texas, etc.) —
+     those re-aggregate listings from these same manufacturer repos filtered
+     by state, so counting them too would double-count every listing that
+     has a parseable state.
   2. Adds a manually-set base count for Taildraggers.com's own live ad count
      (`TAILDRAGGERS_BASE_COUNT` in `update-daily-count.js`). Their
      `/ad-count/` page 403s every request from GitHub Actions — browser
@@ -48,7 +53,9 @@ GitHub Actions runs the update on a schedule, and GitHub Pages hosts the JSON + 
 
 When a new manufacturer repo goes live, add its repo name to the
 `SCRAPED_SITES` array in `update-daily-count.js` — that's the only place it
-needs to be listed.
+needs to be listed. Don't add a per-state repo (colorado, texas, etc.) —
+those aggregate from the manufacturer repos already in the array, so adding
+one would double-count.
 
 ## Notes
 

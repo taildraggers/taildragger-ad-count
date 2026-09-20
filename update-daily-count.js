@@ -21,8 +21,12 @@ const FETCH_HEADERS = {
     '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
 };
 
-// Every other taildraggers.com scraper repo, each publishing its own listings
-// page (one row per listing) to its own GitHub Pages site at this URL pattern.
+// Every other taildraggers.com PER-MANUFACTURER scraper repo, each publishing
+// its own listings page (one row per listing) to its own GitHub Pages site at
+// this URL pattern. Deliberately excludes the per-state repos (colorado,
+// texas, etc.) — those re-aggregate listings FROM these same manufacturer
+// repos filtered by state, so counting them too would double-count every
+// listing that has a parseable state.
 const SCRAPED_SITES = [
   'aeronca',
   'airtractor',
@@ -33,9 +37,12 @@ const SCRAPED_SITES = [
   'cessna',
   'cub-crafters',
   'de-Havilland',
+  'extra',
   'fairchild',
+  'great-lakes',
   'just-aircraft',
   'kitfox',
+  'legend',
   'luscombe',
   'maule',
   'piper',
