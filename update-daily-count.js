@@ -35,6 +35,7 @@ const SCRAPED_SITES = [
   'de-Havilland',
   'extra',
   'fairchild',
+  'great-lakes',
   'just-aircraft',
   'kitfox',
   'luscombe',
